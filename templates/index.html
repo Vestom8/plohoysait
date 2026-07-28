@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}VulnShop — каталог{% endblock %}
+{% block content %}
+<section class="hero">
+  <p class="brand-mark">VulnShop</p>
+  <h1>Интернет-магазин с «особенностями»</h1>
+  <p class="lede">Учебный стенд для проверки анализатора уязвимостей. Локально. Намеренно небезопасно.</p>
+  <form class="search-bar" action="{{ url_for('search') }}" method="get">
+    <input type="text" name="q" placeholder="Найти товар…" autocomplete="off">
+    <button type="submit">Искать</button>
+  </form>
+</section>
+
+<section class="catalog">
+  <h2>Товары</h2>
+  <ul class="product-list">
+    {% for p in products %}
+    <li>
+      <a href="{{ url_for('product', product_id=p.id) }}">
+        <span class="cat">{{ p.category }}</span>
+        <strong>{{ p.name }}</strong>
+        <span class="desc">{{ p.description }}</span>
+        <span class="price">{{ "%.0f"|format(p.price) }} ₽</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="lab-hints">
+  <h2>Точки входа для анализатора</h2>
+  <ul>
+    <li><a href="{{ url_for('login') }}">/login</a> — SQL Injection</li>
+    <li><a href="{{ url_for('search', q='test') }}">/search</a> — SQLi + Reflected XSS</li>
+    <li><a href="{{ url_for('product', product_id=1) }}">/product/1</a> — Stored XSS</li>
+    <li><a href="{{ url_for('profile') }}?id=1">/profile?id=1</a> — IDOR</li>
+    <li><a href="{{ url_for('download', file='catalog.txt') }}">/download</a> — Path Traversal</li>
+    <li><a href="{{ url_for('ping') }}">/ping</a> — Command Injection</li>
+    <li><a href="{{ url_for('api_user', user_id=1) }}">/api/user/1</a> — утечка данных</li>
+  </ul>
+</section>
+{% endblock %}

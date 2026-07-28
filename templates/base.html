@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}VulnShop{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="logo" href="{{ url_for('index') }}">Vuln<span>Shop</span></a>
+    <nav>
+      <a href="{{ url_for('index') }}">Каталог</a>
+      <a href="{{ url_for('search') }}">Поиск</a>
+      <a href="{{ url_for('ping') }}">Ping</a>
+      {% if session.get('user_id') %}
+        <a href="{{ url_for('profile') }}">Профиль</a>
+        <a href="{{ url_for('transfer') }}">Перевод</a>
+        <a href="{{ url_for('upload') }}">Загрузка</a>
+        {% if session.get('role') == 'admin' %}
+          <a href="{{ url_for('admin') }}">Админ</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}" class="nav-muted">Выйти ({{ session.username }})</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="nav-cta">Войти</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <p>VulnShop — учебный стенд для анализатора ИБ. Не для продакшена.</p>
+  </footer>
+</body>
+</html>

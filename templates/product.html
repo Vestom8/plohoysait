@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — VulnShop{% endblock %}
+{% block content %}
+<section class="product-detail">
+  <p class="cat">{{ product.category }}</p>
+  <h1>{{ product.name }}</h1>
+  <p class="lede">{{ product.description }}</p>
+  <p class="price-lg">{{ "%.0f"|format(product.price) }} ₽</p>
+</section>
+
+<section class="comments">
+  <h2>Отзывы</h2>
+  <form method="post" class="stack-form">
+    <label>
+      Имя
+      <input type="text" name="author" value="{{ session.get('username', '') }}">
+    </label>
+    <label>
+      Комментарий
+      <textarea name="content" rows="3" required placeholder="Текст отзыва…"></textarea>
+    </label>
+    <button type="submit">Оставить отзыв</button>
+  </form>
+  <p class="hint">Stored XSS: вставьте <code>&lt;script&gt;alert('xss')&lt;/script&gt;</code> или <code>&lt;img src=x onerror=alert(1)&gt;</code></p>
+
+  <ul class="comment-list">
+    {% for c in comments %}
+    <li>
+      <strong>{{ c.author }}</strong>
+      {# CWE-79: Stored XSS — content без экранирования #}
+      <div class="comment-body">{{ c.content|safe }}</div>
+    </li>
+    {% else %}
+    <li class="muted">Пока нет отзывов.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

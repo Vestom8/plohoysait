@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Ping — VulnShop{% endblock %}
+{% block content %}
+<section class="form-page">
+  <h1>Диагностика сети</h1>
+  <p class="hint">Command Injection: <code>127.0.0.1 &amp; whoami</code> (Windows) или <code>127.0.0.1; id</code> (Linux)</p>
+  <form method="post" class="stack-form">
+    <label>
+      Хост
+      <input type="text" name="host" value="127.0.0.1" required>
+    </label>
+    <button type="submit">Ping</button>
+  </form>
+  {% if result %}
+  <pre class="output">{{ result }}</pre>
+  {% endif %}
+</section>
+{% endblock %}

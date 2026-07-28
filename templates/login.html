@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Вход — VulnShop{% endblock %}
+{% block content %}
+<section class="form-page">
+  <h1>Вход</h1>
+  <p class="hint">Попробуйте SQL Injection: <code>admin' --</code> или <code>' OR '1'='1</code></p>
+  {% if error %}
+  <p class="error">{{ error }}</p>
+  {% endif %}
+  <form method="post" class="stack-form">
+    <label>
+      Логин
+      <input type="text" name="username" required autofocus>
+    </label>
+    <label>
+      Пароль
+      <input type="password" name="password">
+    </label>
+    <button type="submit">Войти</button>
+  </form>
+  <p class="accounts">Тестовые аккаунты: <code>alice / password</code>, <code>bob / qwerty</code>, <code>admin / admin123</code></p>
+</section>
+{% endblock %}

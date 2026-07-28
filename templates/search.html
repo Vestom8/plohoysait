@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Поиск — VulnShop{% endblock %}
+{% block content %}
+<section class="form-page">
+  <h1>Поиск</h1>
+  <form class="search-bar" action="{{ url_for('search') }}" method="get">
+    <input type="text" name="q" value="{{ q }}" placeholder="Запрос…" autocomplete="off">
+    <button type="submit">Искать</button>
+  </form>
+
+  {% if q %}
+  {# CWE-79: намеренно без |e — Reflected XSS #}
+  <p class="search-echo">Результаты по запросу: <span class="raw">{{ q|safe }}</span></p>
+  {% endif %}
+
+  {% if error %}
+  <p class="error">{{ error }}</p>
+  {% endif %}
+
+  {% if products %}
+  <ul class="product-list">
+    {% for p in products %}
+    <li>
+      <a href="{{ url_for('product', product_id=p.id) }}">
+        <span class="cat">{{ p.category }}</span>
+        <strong>{{ p.name }}</strong>
+        <span class="price">{{ "%.0f"|format(p.price) }} ₽</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% elif q %}
+  <p class="muted">Ничего не найдено.</p>
+  {% endif %}
+
+  <p class="hint">SQLi: <code>' OR 1=1 --</code> · XSS: <code>&lt;script&gt;alert(1)&lt;/script&gt;</code></p>
+</section>
+{% endblock %}

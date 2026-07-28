@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Перевод — VulnShop{% endblock %}
+{% block content %}
+<section class="form-page">
+  <h1>Перевод средств</h1>
+  <p class="hint">CSRF: форма без токена — можно подделать запрос с другого сайта</p>
+  {% if message %}
+  <p class="ok">{{ message }}</p>
+  {% endif %}
+  <form method="post" class="stack-form">
+    <label>
+      Кому (логин)
+      <input type="text" name="to_user" required placeholder="bob">
+    </label>
+    <label>
+      Сумма
+      <input type="number" name="amount" step="0.01" min="0.01" required>
+    </label>
+    <button type="submit">Перевести</button>
+  </form>
+</section>
+{% endblock %}

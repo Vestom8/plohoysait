@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Профиль — VulnShop{% endblock %}
+{% block content %}
+<section class="form-page">
+  <h1>Профиль</h1>
+  <p class="hint">IDOR: смените <code>?id=</code> на 1, 2, 3… чтобы смотреть чужие данные</p>
+
+  <dl class="profile-grid">
+    <dt>ID</dt><dd>{{ user.id }}</dd>
+    <dt>Логин</dt><dd>{{ user.username }}</dd>
+    <dt>Email</dt><dd>{{ user.email }}</dd>
+    <dt>Роль</dt><dd>{{ user.role }}</dd>
+    <dt>Баланс</dt><dd>{{ "%.2f"|format(user.balance) }} ₽</dd>
+    <dt>Пароль</dt><dd><code>{{ user.password }}</code></dd>
+  </dl>
+
+  <h2>Сообщения</h2>
+  <ul class="message-list">
+    {% for m in messages %}
+    <li>
+      <strong>{{ m.subject }}</strong>
+      <p>{{ m.body }}</p>
+    </li>
+    {% else %}
+    <li class="muted">Нет сообщений.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

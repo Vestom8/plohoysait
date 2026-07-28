@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Админ — VulnShop{% endblock %}
+{% block content %}
+<section class="form-page">
+  <h1>Панель администратора</h1>
+  <p class="hint">Broken Access Control: роль берётся из cookie/session без сверки с БД</p>
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Логин</th>
+        <th>Email</th>
+        <th>Роль</th>
+        <th>Баланс</th>
+        <th>Пароль</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.id }}</td>
+        <td>{{ u.username }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.role }}</td>
+        <td>{{ "%.2f"|format(u.balance) }}</td>
+        <td><code>{{ u.password }}</code></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
