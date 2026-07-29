@@ -1,9 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Ping — VulnShop{% endblock %}
 {% block content %}
-<section class="form-page">
+<section class="form-page form-page-wide">
   <h1>Диагностика сети</h1>
-  <p class="hint">Command Injection: <code>127.0.0.1 &amp; whoami</code> (Windows) или <code>127.0.0.1; id</code> (Linux)</p>
+  <div class="hint-box">
+    <p class="hint-box-title">Command Injection</p>
+    <p><strong>Windows:</strong></p>
+    <pre class="payload">127.0.0.1 &amp; whoami</pre>
+    <pre class="payload">127.0.0.1 &amp; dir</pre>
+    <p><strong>Linux:</strong></p>
+    <pre class="payload">127.0.0.1; id</pre>
+    <p><a href="{{ url_for('hints') }}#cmd">Подробнее →</a></p>
+  </div>
   <form method="post" class="stack-form">
     <label>
       Хост

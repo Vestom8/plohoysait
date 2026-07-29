@@ -3,7 +3,13 @@
 {% block content %}
 <section class="form-page">
   <h1>Вход</h1>
-  <p class="hint">Попробуйте SQL Injection: <code>admin' --</code> или <code>' OR '1'='1</code></p>
+  <div class="hint-box">
+    <p class="hint-box-title">SQL Injection</p>
+    <p>В логин вставьте один из payload’ов, пароль — любой:</p>
+    <pre class="payload">admin' --</pre>
+    <pre class="payload">' OR '1'='1' --</pre>
+    <p><a href="{{ url_for('hints') }}#sqli-login">Подробнее →</a></p>
+  </div>
   {% if error %}
   <p class="error">{{ error }}</p>
   {% endif %}

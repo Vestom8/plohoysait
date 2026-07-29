@@ -337,6 +337,12 @@ def open_redirect():
     return redirect(url)
 
 
+@app.route("/hints")
+def hints():
+    """Страница с подсказками для демо / презентации."""
+    return render_template("hints.html")
+
+
 if __name__ == "__main__":
     if not os.path.exists(DATABASE):
         init_db()

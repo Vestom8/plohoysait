@@ -10,6 +10,13 @@
 
 <section class="comments">
   <h2>Отзывы</h2>
+  <div class="hint-box">
+    <p class="hint-box-title">Stored XSS</p>
+    <p>Вставьте в комментарий — сработает у всех, кто откроет товар:</p>
+    <pre class="payload">&lt;script&gt;alert('Stored XSS')&lt;/script&gt;</pre>
+    <pre class="payload">&lt;img src=x onerror=alert(1)&gt;</pre>
+    <p><a href="{{ url_for('hints') }}#xss-stored">Подробнее →</a></p>
+  </div>
   <form method="post" class="stack-form">
     <label>
       Имя
@@ -21,7 +28,6 @@
     </label>
     <button type="submit">Оставить отзыв</button>
   </form>
-  <p class="hint">Stored XSS: вставьте <code>&lt;script&gt;alert('xss')&lt;/script&gt;</code> или <code>&lt;img src=x onerror=alert(1)&gt;</code></p>
 
   <ul class="comment-list">
     {% for c in comments %}

@@ -1,9 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Профиль — VulnShop{% endblock %}
 {% block content %}
-<section class="form-page">
+<section class="form-page form-page-wide">
   <h1>Профиль</h1>
-  <p class="hint">IDOR: смените <code>?id=</code> на 1, 2, 3… чтобы смотреть чужие данные</p>
+  <div class="hint-box">
+    <p class="hint-box-title">IDOR</p>
+    <p>Смените <code>?id=</code> в адресной строке:</p>
+    <pre class="payload">?id=1  → admin (секрет в сообщениях)
+?id=2  → alice
+?id=3  → bob</pre>
+    <p><a href="{{ url_for('hints') }}#idor">Подробнее →</a></p>
+  </div>
 
   <dl class="profile-grid">
     <dt>ID</dt><dd>{{ user.id }}</dd>

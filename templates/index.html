@@ -29,14 +29,16 @@
 
 <section class="lab-hints">
   <h2>Точки входа для анализатора</h2>
+  <p class="lede" style="margin-bottom:1rem">Полные payload’ы и порядок демо — на странице <a href="{{ url_for('hints') }}">Подсказки</a>.</p>
   <ul>
-    <li><a href="{{ url_for('login') }}">/login</a> — SQL Injection</li>
+    <li><a href="{{ url_for('login') }}">/login</a> — SQL Injection · <code>admin' --</code></li>
     <li><a href="{{ url_for('search', q='test') }}">/search</a> — SQLi + Reflected XSS</li>
     <li><a href="{{ url_for('product', product_id=1) }}">/product/1</a> — Stored XSS</li>
     <li><a href="{{ url_for('profile') }}?id=1">/profile?id=1</a> — IDOR</li>
-    <li><a href="{{ url_for('download', file='catalog.txt') }}">/download</a> — Path Traversal</li>
-    <li><a href="{{ url_for('ping') }}">/ping</a> — Command Injection</li>
-    <li><a href="{{ url_for('api_user', user_id=1) }}">/api/user/1</a> — утечка данных</li>
+    <li><a href="{{ url_for('download', file='catalog.txt') }}">/download</a> — Path Traversal · <code>../app.py</code></li>
+    <li><a href="{{ url_for('ping') }}">/ping</a> — Command Injection · <code>127.0.0.1 &amp; whoami</code></li>
+    <li><a href="{{ url_for('api_user', user_id=1) }}">/api/user/1</a> — утечка паролей</li>
+    <li><a href="{{ url_for('hints') }}">/hints</a> — все подсказки для презентации</li>
   </ul>
 </section>
 {% endblock %}

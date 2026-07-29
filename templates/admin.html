@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Админ — VulnShop{% endblock %}
 {% block content %}
-<section class="form-page">
+<section class="form-page form-page-wide">
   <h1>Панель администратора</h1>
-  <p class="hint">Broken Access Control: роль берётся из cookie/session без сверки с БД</p>
+  <div class="hint-box">
+    <p class="hint-box-title">Broken Access Control</p>
+    <p>Роль берётся из session без сверки с БД. Войти как admin: на <a href="{{ url_for('login') }}">/login</a> введите <code>admin' --</code>.</p>
+    <p><a href="{{ url_for('hints') }}#admin">Подробнее →</a></p>
+  </div>
   <table class="admin-table">
     <thead>
       <tr>
