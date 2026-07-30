@@ -1,0 +1,6 @@
+Каталог товаров VulnShop
+1. Ноутбук ProBook
+2. Смартфон XPhone
+3. Наушники SoundMax
+
+Секретный флаг для path traversal: FLAG{path_traversal_works}

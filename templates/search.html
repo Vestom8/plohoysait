@@ -1,8 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Поиск — VulnShop{% endblock %}
 {% block content %}
-<section class="form-page">
+<section class="form-page form-page-wide">
   <h1>Поиск</h1>
+  <div class="hint-box">
+    <p class="hint-box-title">SQLi + Reflected XSS</p>
+    <p>SQL Injection — все товары:</p>
+    <pre class="payload">%' OR 1=1 --</pre>
+    <p>Reflected XSS:</p>
+    <pre class="payload">&lt;script&gt;alert('XSS')&lt;/script&gt;</pre>
+    <pre class="payload">&lt;img src=x onerror=alert(document.cookie)&gt;</pre>
+    <p><a href="{{ url_for('hints') }}#sqli-search">Подробнее →</a></p>
+  </div>
   <form class="search-bar" action="{{ url_for('search') }}" method="get">
     <input type="text" name="q" value="{{ q }}" placeholder="Запрос…" autocomplete="off">
     <button type="submit">Искать</button>
@@ -32,7 +41,5 @@
   {% elif q %}
   <p class="muted">Ничего не найдено.</p>
   {% endif %}
-
-  <p class="hint">SQLi: <code>' OR 1=1 --</code> · XSS: <code>&lt;script&gt;alert(1)&lt;/script&gt;</code></p>
 </section>
 {% endblock %}

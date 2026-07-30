@@ -119,6 +119,10 @@ nav a:hover {
   padding: 2.5rem clamp(1.25rem, 4vw, 2rem) 4rem;
 }
 
+.site-footer a {
+  color: var(--accent);
+}
+
 .site-footer {
   padding: 1.5rem;
   text-align: center;
@@ -300,9 +304,26 @@ button:active {
   color: var(--accent);
 }
 
+.lab-hints code {
+  font-size: 0.85em;
+  color: var(--warn);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+
+.nav-hints {
+  color: var(--warn) !important;
+  font-weight: 600;
+}
+
 .form-page {
   max-width: 36rem;
   animation: rise 0.45s ease-out;
+}
+
+.form-page-wide {
+  max-width: 42rem;
 }
 
 .stack-form {
@@ -329,7 +350,35 @@ button:active {
   border-radius: 0 4px 4px 0;
 }
 
+.hint-box {
+  font-size: 0.92rem;
+  color: var(--muted);
+  padding: 1rem 1.1rem;
+  margin-bottom: 1.25rem;
+  background: rgba(61, 214, 198, 0.07);
+  border: 1px solid rgba(61, 214, 198, 0.2);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+}
+
+.hint-box-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--accent);
+  margin: 0 0 0.5rem;
+}
+
+.hint-box p {
+  margin: 0.4rem 0;
+}
+
+.hint-box a {
+  color: var(--accent);
+}
+
 .hint code,
+.hint-box code,
 .accounts code,
 dd code {
   font-size: 0.85em;
@@ -337,6 +386,153 @@ dd code {
   background: rgba(0, 0, 0, 0.35);
   padding: 0.1em 0.35em;
   border-radius: 3px;
+}
+
+pre.payload {
+  margin: 0.45rem 0;
+  padding: 0.65rem 0.85rem;
+  background: #05080c;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--warn);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* ── Hints page ── */
+
+.hints-page {
+  animation: rise 0.45s ease-out;
+}
+
+.hints-brand {
+  font-size: clamp(2.2rem, 6vw, 3.2rem) !important;
+  margin-bottom: 0.35rem !important;
+}
+
+.hints-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.hints-toc a {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.hints-toc a:hover {
+  color: var(--accent);
+  border-color: rgba(61, 214, 198, 0.4);
+}
+
+.hint-card {
+  margin-bottom: 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(26, 34, 44, 0.55);
+  overflow: hidden;
+}
+
+.hint-card summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  padding: 0.9rem 1.1rem;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.hint-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.hint-card summary:hover {
+  background: rgba(61, 214, 198, 0.05);
+}
+
+.hint-num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--bg);
+  background: var(--accent);
+  width: 1.6rem;
+  height: 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.hint-title {
+  flex: 1;
+  font-weight: 600;
+  min-width: 10rem;
+}
+
+.hint-link {
+  font-size: 0.85rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.hint-link:hover {
+  text-decoration: underline;
+}
+
+.hint-body {
+  padding: 0 1.1rem 1.15rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.hint-body p {
+  margin: 0.75rem 0 0.35rem;
+}
+
+.hint-why {
+  font-size: 0.88rem !important;
+  color: var(--accent-dim) !important;
+  border-top: 1px dashed var(--line);
+  padding-top: 0.75rem !important;
+  margin-top: 1rem !important;
+}
+
+.demo-order {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.demo-order h2 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  margin: 0 0 1rem;
+}
+
+.demo-order ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--muted);
+  line-height: 1.9;
+}
+
+.demo-order a {
+  color: var(--accent);
 }
 
 .error {

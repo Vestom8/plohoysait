@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Загрузка — VulnShop{% endblock %}
 {% block content %}
-<section class="form-page">
+<section class="form-page form-page-wide">
   <h1>Загрузка файлов</h1>
-  <p class="hint">Unrestricted Upload: нет проверки расширения и содержимого</p>
+  <div class="hint-box">
+    <p class="hint-box-title">Unrestricted Upload</p>
+    <p>Нет проверки расширения и содержимого. Загрузите любой файл — он будет доступен по <code>/uploads/имя</code>.</p>
+    <p><a href="{{ url_for('hints') }}#upload">Подробнее →</a></p>
+  </div>
   {% if message %}
   <p class="ok">{{ message }}</p>
   {% endif %}

