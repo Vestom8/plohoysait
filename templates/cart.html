@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Корзина — VulnShop{% endblock %}
+{% block content %}
+<section class="form-page form-page-wide">
+  <h1>Корзина</h1>
+  <div class="hint-box">
+    <p class="hint-box-title">Insecure Deserialization + Price Tampering</p>
+    <p>Корзина хранится в cookie <code>cart</code> как base64(pickle) — сервер десериализует её через <code>pickle.loads</code> без проверки подписи.</p>
+    <p>Поле «Цена» при добавлении товара идёт в форме скрытым полем — сервер берёт её из запроса, а не из БД.</p>
+    <p><a href="{{ url_for('hints') }}#cart-pickle">Подробнее →</a></p>
+  </div>
+
+  {% if items %}
+  <table class="admin-table">
+    <thead><tr><th>Товар</th><th>Цена</th><th>Кол-во</th><th>Сумма</th></tr></thead>
+    <tbody>
+      {% for i in items %}
+      <tr>
+        <td>{{ i.name }}</td>
+        <td>{{ "%.2f"|format(i.price) }} ₽</td>
+        <td>{{ i.qty }}</td>
+        <td>{{ "%.2f"|format(i.price * i.qty) }} ₽</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="price-lg">Итого: {{ "%.2f"|format(total) }} ₽</p>
+  <div style="display:flex; gap:1rem">
+    <form method="post" action="{{ url_for('checkout') }}">
+      <button type="submit">Оформить заказ</button>
+    </form>
+    <form method="get" action="{{ url_for('cart_clear') }}">
+      <button type="submit" style="background:var(--bg-elevated); color:var(--ink)">Очистить корзину</button>
+    </form>
+  </div>
+  {% else %}
+  <p class="muted">Корзина пуста. Добавьте товар из <a href="{{ url_for('index') }}">каталога</a>.</p>
+  {% endif %}
+
+  <h2 style="margin-top:2.5rem">Добавить товар вручную (demo)</h2>
+  <form method="post" class="stack-form">
+    <label>
+      ID товара
+      <input type="number" name="product_id" value="1" required>
+    </label>
+    <label>
+      Цена (можно подменить — сервер доверяет этому полю)
+      <input type="number" name="price" step="0.01" placeholder="оставьте пустым — возьмётся из БД">
+    </label>
+    <label>
+      Количество
+      <input type="number" name="qty" value="1" min="1">
+    </label>
+    <button type="submit">Добавить в корзину</button>
+  </form>
+</section>
+{% endblock %}

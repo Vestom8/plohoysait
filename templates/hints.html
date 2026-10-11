@@ -9,9 +9,12 @@
   <nav class="hints-toc">
     <a href="#sqli-login">SQLi логин</a>
     <a href="#sqli-search">SQLi поиск</a>
+    <a href="#blind-sqli">Blind SQLi</a>
     <a href="#xss-reflected">XSS отражённый</a>
     <a href="#xss-stored">XSS хранимый</a>
-    <a href="#idor">IDOR</a>
+    <a href="#dom-xss">DOM XSS</a>
+    <a href="#idor">IDOR профиль</a>
+    <a href="#idor-orders">IDOR заказы</a>
     <a href="#path">Path Traversal</a>
     <a href="#cmd">Command Injection</a>
     <a href="#csrf">CSRF</a>
@@ -19,6 +22,18 @@
     <a href="#admin">Access Control</a>
     <a href="#api">API leak</a>
     <a href="#redirect">Open Redirect</a>
+    <a href="#mass-assignment">Mass Assignment</a>
+    <a href="#reset-token">Reset Token</a>
+    <a href="#ssti">SSTI</a>
+    <a href="#xxe">XXE</a>
+    <a href="#yaml">YAML RCE</a>
+    <a href="#cart-pickle">Pickle Cookie</a>
+    <a href="#ssrf">SSRF</a>
+    <a href="#jwt">JWT</a>
+    <a href="#race-condition">Race Condition</a>
+    <a href="#business-logic">Business Logic</a>
+    <a href="#cors">CORS</a>
+    <a href="#secrets-leak">Секреты/бэкапы</a>
   </nav>
 
   <details class="hint-card" id="sqli-login" open>
@@ -198,6 +213,200 @@
     </div>
   </details>
 
+  <details class="hint-card" id="blind-sqli">
+    <summary>
+      <span class="hint-num">13</span>
+      <span class="hint-title">Blind / Time-based SQL Injection</span>
+      <a class="hint-link" href="{{ url_for('category', cat='electronics') }}" onclick="event.stopPropagation()">/category/&lt;cat&gt; →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Ошибки СУБД скрыты, но в SQLite зарегистрирована функция <code>SLEEP(n)</code> — её можно вызвать из инъекции и измерить задержку ответа:</p>
+      <pre class="payload">/category/electronics' OR SLEEP(3)='0</pre>
+      <p class="hint-why">Классический time-based blind SQLi: правильное условие — задержка 3 секунды, неправильное — мгновенный ответ.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="dom-xss">
+    <summary>
+      <span class="hint-num">14</span>
+      <span class="hint-title">DOM-based XSS</span>
+      <a class="hint-link" href="{{ url_for('about') }}" onclick="event.stopPropagation()">/about →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Скрипт на странице берёт <code>location.hash</code> и вставляет его в <code>innerHTML</code> без санитизации:</p>
+      <pre class="payload">/about#&lt;img src=x onerror=alert(1)&gt;</pre>
+      <p class="hint-why">Полезность определяется только анализом JS в браузере — на сервер payload не попадает.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="idor-orders">
+    <summary>
+      <span class="hint-num">15</span>
+      <span class="hint-title">IDOR — чужой заказ</span>
+      <a class="hint-link" href="{{ url_for('orders') }}" onclick="event.stopPropagation()">/orders →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Оформите заказ, затем подставьте в URL произвольный id заказа другого пользователя:</p>
+      <pre class="payload">/order/1
+/order/2</pre>
+      <p class="hint-why">Проверка <code>order.user_id == session.user_id</code> отсутствует.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="mass-assignment">
+    <summary>
+      <span class="hint-num">16</span>
+      <span class="hint-title">Mass Assignment + User Enumeration</span>
+      <a class="hint-link" href="{{ url_for('register') }}" onclick="event.stopPropagation()">/register →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Форма содержит скрытые поля <code>role</code> и <code>balance</code> — измените их перед отправкой (devtools/Burp):</p>
+      <pre class="payload">role=admin
+balance=999999</pre>
+      <p>Повторная регистрация логина <code>admin</code> вернёт отдельное сообщение «уже занят» — так можно перебором узнавать существующие логины.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="reset-token">
+    <summary>
+      <span class="hint-num">17</span>
+      <span class="hint-title">Предсказуемый токен сброса пароля</span>
+      <a class="hint-link" href="{{ url_for('forgot_password') }}" onclick="event.stopPropagation()">/forgot-password →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Токен — это <code>md5(логин)</code>, без соли и секрета. Его можно посчитать самостоятельно:</p>
+      <pre class="payload">md5("admin") = 21232f297a57a5a743894a0e4a801fc3</pre>
+      <p class="hint-why">Зная алгоритм, можно сбросить пароль любому пользователю без доступа к его почте.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="ssti">
+    <summary>
+      <span class="hint-num">18</span>
+      <span class="hint-title">Server-Side Template Injection</span>
+      <a class="hint-link" href="{{ url_for('signature') }}" onclick="event.stopPropagation()">/signature →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Текст подписи рендерится как Jinja2-шаблон:</p>
+      <pre class="payload">{{ '{{ 7*7 }}' }}
+{{ '{{ config }}' }}</pre>
+      <p class="hint-why">На реальном сервере SSTI в Jinja2 часто доводится до RCE через <code>__globals__</code>/<code>__builtins__</code>.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="xxe">
+    <summary>
+      <span class="hint-num">19</span>
+      <span class="hint-title">XXE — XML External Entity</span>
+      <a class="hint-link" href="{{ url_for('feedback') }}" onclick="event.stopPropagation()">/feedback →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Парсер lxml разрешает внешние сущности:</p>
+      <pre class="payload">&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE foo [ &lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt; ]&gt;
+&lt;feedback&gt;&lt;name&gt;t&lt;/name&gt;&lt;message&gt;&amp;xxe;&lt;/message&gt;&lt;/feedback&gt;</pre>
+    </div>
+  </details>
+
+  <details class="hint-card" id="yaml">
+    <summary>
+      <span class="hint-num">20</span>
+      <span class="hint-title">Insecure Deserialization — YAML</span>
+      <a class="hint-link" href="{{ url_for('import_config') }}" onclick="event.stopPropagation()">/import-config →</a>
+    </summary>
+    <div class="hint-body">
+      <p><code>yaml.load(..., Loader=yaml.Loader)</code> вместо <code>safe_load</code>:</p>
+      <pre class="payload">!!python/object/apply:os.popen ["id"]</pre>
+    </div>
+  </details>
+
+  <details class="hint-card" id="cart-pickle">
+    <summary>
+      <span class="hint-num">21</span>
+      <span class="hint-title">Insecure Deserialization — pickle в cookie</span>
+      <a class="hint-link" href="{{ url_for('cart') }}" onclick="event.stopPropagation()">/cart →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Корзина хранится как <code>base64(pickle.dumps(cart))</code> в cookie <code>cart</code> и десериализуется без HMAC/подписи — классический вектор RCE через pickle, плюс цена товара в форме доверяется клиенту (price tampering).</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="ssrf">
+    <summary>
+      <span class="hint-num">22</span>
+      <span class="hint-title">SSRF</span>
+      <a class="hint-link" href="{{ url_for('fetch_url') }}" onclick="event.stopPropagation()">/fetch →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Сервер реально выполняет запрос по переданному URL без allowlist:</p>
+      <pre class="payload">http://127.0.0.1:5000/api/user/1
+http://169.254.169.254/latest/meta-data/</pre>
+    </div>
+  </details>
+
+  <details class="hint-card" id="jwt">
+    <summary>
+      <span class="hint-num">23</span>
+      <span class="hint-title">JWT без проверки подписи</span>
+      <a class="hint-link" href="{{ url_for('api_session') }}" onclick="event.stopPropagation()">/api/session →</a>
+    </summary>
+    <div class="hint-body">
+      <p>После входа выдаётся cookie <code>remember_token</code> (JWT). <code>/api/session</code> декодирует его с <code>verify_signature: False</code> — claims (включая <code>role</code>) принимаются без проверки подписи, токен можно подделать самому.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="race-condition">
+    <summary>
+      <span class="hint-num">24</span>
+      <span class="hint-title">Race Condition — перевод средств</span>
+      <a class="hint-link" href="{{ url_for('transfer') }}" onclick="event.stopPropagation()">/transfer →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Проверка баланса и его списание разнесены во времени без блокировки. Отправьте несколько параллельных запросов с суммой, равной балансу — можно увести баланс в минус.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="business-logic">
+    <summary>
+      <span class="hint-num">25</span>
+      <span class="hint-title">Business Logic — отрицательная сумма перевода</span>
+      <a class="hint-link" href="{{ url_for('api_transfer') }}" onclick="event.stopPropagation()">/api/transfer →</a>
+    </summary>
+    <div class="hint-body">
+      <p>JSON API не проверяет <code>amount &gt; 0</code>:</p>
+      <pre class="payload">POST /api/transfer
+{"to_user": "bob", "amount": -1000}</pre>
+      <p class="hint-why">Отрицательная сумма эффективно переводит деньги себе за счёт «получателя».</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="cors">
+    <summary>
+      <span class="hint-num">26</span>
+      <span class="hint-title">Permissive CORS</span>
+      <a class="hint-link" href="{{ url_for('api_user', user_id=1) }}" onclick="event.stopPropagation()">/api/* →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Ответы <code>/api/*</code> содержат <code>Access-Control-Allow-Origin: *</code> вместе с <code>Access-Control-Allow-Credentials: true</code> — недопустимая по спецификации, но часто встречающаяся комбинация.</p>
+    </div>
+  </details>
+
+  <details class="hint-card" id="secrets-leak">
+    <summary>
+      <span class="hint-num">27</span>
+      <span class="hint-title">Утечка конфигурации и бэкапов</span>
+      <a class="hint-link" href="/.env" onclick="event.stopPropagation()">/.env →</a>
+    </summary>
+    <div class="hint-body">
+      <p>Доступны без авторизации:</p>
+      <pre class="payload">/.env
+/.git/config
+/download?file=backup.zip
+/download        (листинг каталога /share/)
+/robots.txt      (подсказывает «интересные» пути)</pre>
+    </div>
+  </details>
+
   <section class="demo-order">
     <h2>Порядок на презентации</h2>
     <ol>
@@ -208,7 +417,17 @@
       <li><a href="#xss-reflected">XSS</a> → <a href="#xss-stored">Stored XSS</a></li>
       <li><a href="#path">Path Traversal</a></li>
       <li><a href="#cmd">Command Injection</a></li>
+      <li><a href="#secrets-leak">Утечка .env / .git / backup.zip</a></li>
+      <li><a href="#cart-pickle">Pickle в cookie</a></li>
+      <li><a href="#ssti">SSTI</a> → <a href="#xxe">XXE</a> → <a href="#yaml">YAML RCE</a></li>
+      <li><a href="#ssrf">SSRF</a></li>
+      <li><a href="#race-condition">Race Condition</a></li>
     </ol>
+  </section>
+
+  <section class="demo-order">
+    <h2>Контрольные точки (без уязвимостей)</h2>
+    <p class="muted">Для проверки ложных срабатываний сканера — тот же функционал, но защищённый: <a href="{{ url_for('safe_search') }}">/safe/search</a>, <a href="{{ url_for('safe_login') }}">/safe/login</a>, <a href="{{ url_for('safe_transfer') }}">/safe/transfer</a>, <a href="{{ url_for('safe_upload') }}">/safe/upload</a>. Полная машиночитаемая карта — <code>VULN_MAP.json</code>.</p>
   </section>
 </section>
 {% endblock %}

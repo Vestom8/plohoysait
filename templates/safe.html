@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Безопасная зона — VulnShop{% endblock %}
+{% block content %}
+<section class="hints-page">
+  <p class="brand-mark hints-brand" style="font-size:clamp(1.8rem,5vw,2.6rem)">Безопасная зона</p>
+  <p class="lede">
+    Четыре контрольные точки без уязвимостей — параметризованные запросы, экранированный
+    вывод, CSRF-токен и allowlist загрузки. Используются для проверки, что сканер
+    <strong>не</strong> помечает их как уязвимые (false positive).
+  </p>
+
+  <nav class="hints-toc">
+    <a href="{{ url_for('safe_search') }}">Поиск</a>
+    <a href="{{ url_for('safe_login') }}">Вход</a>
+    <a href="{{ url_for('safe_transfer') }}">Перевод</a>
+    <a href="{{ url_for('safe_upload') }}">Загрузка</a>
+  </nav>
+
+  {% if section == 'search' %}
+  <div class="hint-card" style="padding:1.1rem">
+    <p class="hint-box-title" style="color:var(--ok)">Контроль: параметризованный поиск</p>
+    <p class="muted">Запрос через <code>?</code>-плейсхолдеры, вывод — через автоэкранирование Jinja2 (без <code>|safe</code>).</p>
+    <form class="search-bar" method="get" action="{{ url_for('safe_search') }}">
+      <input type="text" name="q" value="{{ q or '' }}" placeholder="Запрос…">
+      <button type="submit">Искать</button>
+    </form>
+    {% if q %}
+    <p style="margin-top:1rem">Результаты по запросу: <strong>{{ q }}</strong></p>
+    {% endif %}
+    {% if products %}
+    <ul class="product-list" style="margin-top:1rem">
+      {% for p in products %}
+      <li><a href="{{ url_for('product', product_id=p.id) }}"><span class="cat">{{ p.category }}</span><strong>{{ p.name }}</strong><span class="price">{{ "%.0f"|format(p.price) }} ₽</span></a></li>
+      {% endfor %}
+    </ul>
+    {% elif q %}
+    <p class="muted">Ничего не найдено.</p>
+    {% endif %}
+  </div>
+
+  {% elif section == 'login' %}
+  <div class="hint-card" style="padding:1.1rem">
+    <p class="hint-box-title" style="color:var(--ok)">Контроль: безопасный вход</p>
+    <p class="muted">Параметризованный запрос, одинаковое сообщение об ошибке независимо от причины.</p>
+    {% if login_ok %}<p class="ok">Вход выполнен (демо, без создания сессии).</p>{% endif %}
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+    <form method="post" class="stack-form" action="{{ url_for('safe_login') }}">
+      <label>Логин <input type="text" name="username" required></label>
+      <label>Пароль <input type="password" name="password" required></label>
+      <button type="submit">Войти</button>
+    </form>
+  </div>
+
+  {% elif section == 'transfer' %}
+  <div class="hint-card" style="padding:1.1rem">
+    <p class="hint-box-title" style="color:var(--ok)">Контроль: перевод с CSRF-токеном</p>
+    <p class="muted">Форма включает <code>csrf_token</code>, сервер сверяет его с токеном в session через <code>hmac.compare_digest</code>.</p>
+    {% if message %}<p class="ok">{{ message }}</p>{% endif %}
+    <form method="post" class="stack-form" action="{{ url_for('safe_transfer') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label>Кому (логин) <input type="text" name="to_user" required></label>
+      <label>Сумма <input type="number" name="amount" step="0.01" min="0.01" required></label>
+      <button type="submit">Перевести</button>
+    </form>
+  </div>
+
+  {% elif section == 'upload' %}
+  <div class="hint-card" style="padding:1.1rem">
+    <p class="hint-box-title" style="color:var(--ok)">Контроль: безопасная загрузка</p>
+    <p class="muted">Allowlist расширений (png/jpg/jpeg/gif/pdf/txt), лимит 2 МБ, случайное имя файла на сервере.</p>
+    {% if message %}<p class="{{ 'ok' if upload_ok else 'error' }}">{{ message }}</p>{% endif %}
+    <form method="post" enctype="multipart/form-data" class="stack-form" action="{{ url_for('safe_upload') }}">
+      <label>Файл <input type="file" name="file" required></label>
+      <button type="submit">Загрузить</button>
+    </form>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

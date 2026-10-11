@@ -16,9 +16,11 @@
     <nav>
       <a href="{{ url_for('index') }}">Каталог</a>
       <a href="{{ url_for('search') }}">Поиск</a>
-      <a href="{{ url_for('ping') }}">Ping</a>
+      <a href="{{ url_for('cart') }}">Корзина</a>
+      <a href="{{ url_for('about') }}">О нас</a>
       <a href="{{ url_for('hints') }}" class="nav-hints">Подсказки</a>
       {% if session.get('user_id') %}
+        <a href="{{ url_for('orders') }}">Заказы</a>
         <a href="{{ url_for('profile') }}">Профиль</a>
         <a href="{{ url_for('transfer') }}">Перевод</a>
         <a href="{{ url_for('upload') }}">Загрузка</a>
@@ -27,6 +29,7 @@
         {% endif %}
         <a href="{{ url_for('logout') }}" class="nav-muted">Выйти ({{ session.username }})</a>
       {% else %}
+        <a href="{{ url_for('register') }}">Регистрация</a>
         <a href="{{ url_for('login') }}" class="nav-cta">Войти</a>
       {% endif %}
     </nav>
@@ -37,7 +40,13 @@
   </main>
 
   <footer class="site-footer">
-    <p>VulnShop — учебный стенд для анализатора ИБ. <a href="{{ url_for('hints') }}">Подсказки для демо</a></p>
+    <p>
+      VulnShop — учебный стенд для анализатора ИБ.
+      <a href="{{ url_for('about') }}">О нас</a> ·
+      <a href="{{ url_for('contact') }}">Контакты</a> ·
+      <a href="{{ url_for('safe_search') }}">Безопасная зона</a> ·
+      <a href="{{ url_for('hints') }}">Подсказки для демо</a>
+    </p>
   </footer>
 </body>
 </html>

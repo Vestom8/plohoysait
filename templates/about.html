@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}О нас — VulnShop{% endblock %}
+{% block content %}
+<section class="hero">
+  <p class="brand-mark" style="font-size:clamp(2.2rem,6vw,3.2rem)">О нас</p>
+  <h1>Витрина-полигон для анализатора безопасности</h1>
+  <p class="lede">
+    VulnShop — учебный интернет-магазин. Мы не продаём настоящие товары: это стенд,
+    на котором тренируется и проверяется сканер уязвимостей. Каждая страница магазина —
+    это одновременно и часть «витрины», и точка входа для одной или нескольких уязвимостей.
+  </p>
+  <div id="welcome-banner" class="hint-box" style="display:none"></div>
+</section>
+
+<section class="catalog">
+  <h2>Как мы работаем</h2>
+  <ul class="product-list" style="gap:0.75rem">
+    <li><a href="{{ url_for('index') }}" style="grid-template-columns:1fr"><strong>Витрина</strong><span class="desc">Каталог, поиск по категориям, карточки товаров и отзывы.</span></a></li>
+    <li><a href="{{ url_for('cart') }}" style="grid-template-columns:1fr"><strong>Заказы</strong><span class="desc">Корзина, оформление и история заказов — с намеренными изъянами в логике.</span></a></li>
+    <li><a href="{{ url_for('safe_search') }}" style="grid-template-columns:1fr"><strong>Безопасная зона</strong><span class="desc">Контрольные точки без уязвимостей — для проверки ложных срабатываний сканера.</span></a></li>
+  </ul>
+</section>
+
+<script>
+  // CWE-79: DOM-based XSS — значение из location.hash вставляется в innerHTML без санитизации.
+  // Пример: /about#<img src=x onerror=alert(1)>
+  (function () {
+    var el = document.getElementById("welcome-banner");
+    if (el && location.hash && location.hash.length > 1) {
+      var name = decodeURIComponent(location.hash.slice(1));
+      el.style.display = "block";
+      el.innerHTML = "Привет, " + name + "! Добро пожаловать в VulnShop.";
+    }
+  })();
+</script>
+{% endblock %}

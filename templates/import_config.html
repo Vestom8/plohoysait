@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Импорт конфигурации — VulnShop{% endblock %}
+{% block content %}
+<section class="form-page form-page-wide">
+  <h1>Импорт конфигурации (YAML)</h1>
+  <div class="hint-box">
+    <p class="hint-box-title">Insecure Deserialization</p>
+    <p>Используется <code>yaml.load(..., Loader=yaml.Loader)</code> вместо <code>safe_load</code> — YAML-теги могут выполнять произвольный Python-код.</p>
+    <pre class="payload">!!python/object/apply:os.popen ["id"]</pre>
+    <p><a href="{{ url_for('hints') }}#yaml">Подробнее →</a></p>
+  </div>
+  <form method="post" class="stack-form">
+    <label>
+      YAML-конфигурация
+      <textarea name="yaml" rows="8" placeholder="name: VulnShop
+theme: dark"></textarea>
+    </label>
+    <button type="submit">Импортировать</button>
+  </form>
+  {% if error %}
+  <p class="error">{{ error }}</p>
+  {% endif %}
+  {% if result %}
+  <pre class="output">{{ result }}</pre>
+  {% endif %}
+</section>
+{% endblock %}

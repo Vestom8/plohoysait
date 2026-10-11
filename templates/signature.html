@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Подпись для писем — VulnShop{% endblock %}
+{% block content %}
+<section class="form-page form-page-wide">
+  <h1>Подпись для писем</h1>
+  <div class="hint-box">
+    <p class="hint-box-title">Server-Side Template Injection (SSTI)</p>
+    <p>Текст подписи рендерится как Jinja2-шаблон на сервере:</p>
+    <pre class="payload">{{ '{{ 7*7 }}' }}
+{{ '{{ config }}' }}</pre>
+    <p><a href="{{ url_for('hints') }}#ssti">Подробнее →</a></p>
+  </div>
+  <form method="post" class="stack-form">
+    <label>
+      Шаблон подписи
+      <textarea name="template" rows="3">{{ template_src or ('С уважением, ' + session.get('username', 'Гость')) }}</textarea>
+    </label>
+    <button type="submit">Сгенерировать превью</button>
+  </form>
+  {% if rendered is not none %}
+  <h2>Превью</h2>
+  <pre class="output">{{ rendered }}</pre>
+  {% endif %}
+</section>
+{% endblock %}

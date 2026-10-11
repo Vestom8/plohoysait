@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Заказы — VulnShop{% endblock %}
+{% block content %}
+<section class="form-page form-page-wide">
+  <h1>{% if detail %}Заказ #{{ detail.id }}{% else %}Мои заказы{% endif %}</h1>
+  <div class="hint-box">
+    <p class="hint-box-title">IDOR</p>
+    <p>Откройте любой заказ по прямой ссылке <code>/order/&lt;id&gt;</code> — сервер не проверяет, что заказ принадлежит вам.</p>
+    <p><a href="{{ url_for('hints') }}#idor-orders">Подробнее →</a></p>
+  </div>
+
+  {% if detail %}
+  <p class="muted">Пользователь ID: {{ detail.user_id }} · Создан: {{ detail.created_at }}</p>
+  <table class="admin-table">
+    <thead><tr><th>Товар</th><th>Цена</th><th>Кол-во</th></tr></thead>
+    <tbody>
+      {% for i in items %}
+      <tr><td>{{ i.name }}</td><td>{{ "%.2f"|format(i.price) }} ₽</td><td>{{ i.qty }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="price-lg">Итого: {{ "%.2f"|format(detail.total) }} ₽</p>
+  {% else %}
+  {% if orders %}
+  <ul class="message-list">
+    {% for o in orders %}
+    <li>
+      <strong><a href="{{ url_for('order_detail', order_id=o.id) }}">Заказ #{{ o.id }}</a></strong>
+      <p>{{ "%.2f"|format(o.total) }} ₽ · {{ o.created_at }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="muted">У вас пока нет заказов. Оформите что-нибудь из <a href="{{ url_for('cart') }}">корзины</a>.</p>
+  {% endif %}
+  {% endif %}
+</section>
+{% endblock %}

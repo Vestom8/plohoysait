@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Контакты — VulnShop{% endblock %}
+{% block content %}
+<section class="form-page form-page-wide">
+  <h1>Контакты</h1>
+  <p class="lede">Есть вопрос по заказу или по стенду? Напишите нам.</p>
+  {% if message %}
+  <p class="ok">{{ message }}</p>
+  {% endif %}
+  <form method="post" class="stack-form">
+    <label>
+      Имя
+      <input type="text" name="name" required>
+    </label>
+    <label>
+      Email
+      <input type="email" name="email" required>
+    </label>
+    <label>
+      Сообщение
+      <textarea name="message" rows="4" required></textarea>
+    </label>
+    <button type="submit">Отправить</button>
+  </form>
+  <p class="muted" style="margin-top:2rem">
+    Почта поддержки: support@vulnshop.local · Телефон: +7 (900) 000-00-00
+  </p>
+</section>
+{% endblock %}

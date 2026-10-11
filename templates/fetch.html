@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Проверка ссылки — VulnShop{% endblock %}
+{% block content %}
+<section class="form-page form-page-wide">
+  <h1>Проверка превью по ссылке</h1>
+  <div class="hint-box">
+    <p class="hint-box-title">SSRF</p>
+    <p>Сервер реально выполняет HTTP-запрос по вашему адресу (без allowlist). Попробуйте внутренние адреса:</p>
+    <pre class="payload">http://127.0.0.1:5000/api/user/1
+http://169.254.169.254/latest/meta-data/</pre>
+    <p><a href="{{ url_for('hints') }}#ssrf">Подробнее →</a></p>
+  </div>
+  <form method="post" class="stack-form">
+    <label>
+      URL товара/партнёра для превью
+      <input type="text" name="url" placeholder="http://127.0.0.1:5000/api/user/1" required>
+    </label>
+    <button type="submit">Получить превью</button>
+  </form>
+  {% if error %}
+  <p class="error">{{ error }}</p>
+  {% endif %}
+  {% if result %}
+  <h2>Ответ сервера ({{ result.status }})</h2>
+  <pre class="output">{{ result.headers }}
+
+{{ result.body }}</pre>
+  {% endif %}
+</section>
+{% endblock %}

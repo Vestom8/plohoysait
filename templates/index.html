@@ -13,6 +13,11 @@
 
 <section class="catalog">
   <h2>Товары</h2>
+  <nav class="hints-toc" style="margin:0 0 1.5rem">
+    {% for c in ['electronics', 'audio', 'peripherals', 'accessories'] %}
+    <a href="{{ url_for('category', cat=c) }}">{{ c }}</a>
+    {% endfor %}
+  </nav>
   <ul class="product-list">
     {% for p in products %}
     <li>
@@ -29,15 +34,29 @@
 
 <section class="lab-hints">
   <h2>Точки входа для анализатора</h2>
-  <p class="lede" style="margin-bottom:1rem">Полные payload’ы и порядок демо — на странице <a href="{{ url_for('hints') }}">Подсказки</a>.</p>
+  <p class="lede" style="margin-bottom:1rem">Полные payload’ы и порядок демо — на странице <a href="{{ url_for('hints') }}">Подсказки</a>. Машиночитаемая карта — <code>VULN_MAP.json</code> в корне репозитория.</p>
   <ul>
     <li><a href="{{ url_for('login') }}">/login</a> — SQL Injection · <code>admin' --</code></li>
+    <li><a href="{{ url_for('register') }}">/register</a> — Mass Assignment, User Enumeration</li>
+    <li><a href="{{ url_for('forgot_password') }}">/forgot-password</a> — предсказуемый токен сброса</li>
     <li><a href="{{ url_for('search', q='test') }}">/search</a> — SQLi + Reflected XSS</li>
+    <li><a href="{{ url_for('category', cat='electronics') }}">/category/&lt;cat&gt;</a> — Blind/Time-based SQLi · <code>SLEEP()</code></li>
     <li><a href="{{ url_for('product', product_id=1) }}">/product/1</a> — Stored XSS</li>
+    <li><a href="{{ url_for('cart') }}">/cart</a> — Insecure Deserialization (pickle), Price Tampering</li>
+    <li><a href="{{ url_for('orders') }}">/orders</a>, <code>/order/&lt;id&gt;</code> — IDOR</li>
     <li><a href="{{ url_for('profile') }}?id=1">/profile?id=1</a> — IDOR</li>
-    <li><a href="{{ url_for('download', file='catalog.txt') }}">/download</a> — Path Traversal · <code>../app.py</code></li>
+    <li><a href="{{ url_for('signature') }}">/signature</a> — SSTI</li>
+    <li><a href="{{ url_for('feedback') }}">/feedback</a> — XXE</li>
+    <li><a href="{{ url_for('import_config') }}">/import-config</a> — Insecure Deserialization (YAML)</li>
+    <li><a href="{{ url_for('fetch_url') }}">/fetch</a> — SSRF</li>
+    <li><a href="{{ url_for('download', file='catalog.txt') }}">/download</a> — Path Traversal · <code>../app.py</code>, листинг каталога</li>
     <li><a href="{{ url_for('ping') }}">/ping</a> — Command Injection · <code>127.0.0.1 &amp; whoami</code></li>
     <li><a href="{{ url_for('api_user', user_id=1) }}">/api/user/1</a> — утечка паролей</li>
+    <li><a href="{{ url_for('api_transfer') }}">/api/transfer</a> — Business Logic (отрицательная сумма)</li>
+    <li><a href="{{ url_for('api_session') }}">/api/session</a> — JWT без проверки подписи</li>
+    <li><a href="{{ url_for('about') }}">/about#&lt;img src=x onerror=alert(1)&gt;</a> — DOM XSS</li>
+    <li><a href="/.env">/.env</a>, <a href="/.git/config">/.git/config</a>, <a href="{{ url_for('download', file='backup.zip') }}">backup.zip</a> — утечка секретов/конфигурации</li>
+    <li><a href="{{ url_for('safe_search') }}">/safe/*</a> — контрольные точки без уязвимостей</li>
     <li><a href="{{ url_for('hints') }}">/hints</a> — все подсказки для презентации</li>
   </ul>
 </section>
